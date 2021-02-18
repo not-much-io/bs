@@ -1,4 +1,4 @@
-FROM serverd-base-image
+FROM bs-base-image
 
 COPY . .
 

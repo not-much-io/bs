@@ -20,20 +20,20 @@ ci: ## Run CI rust quality check process
 	make lint && make format-check && make test
 
 dbuild-image: ## Build the defined docker image. Usage: make dbuild-image variant=Base|VSCode|CI
-	@docker build --file Dockerfile.$(variant) --tag serverd-$(variant)-image .
+	@docker build --file Dockerfile.$(variant) --tag bs-$(variant)-image .
 
 dcreate-container: ## Create the defined docker container. Usage: make dcreate-container variant=Base|VSCode|CI
 	@docker create \
-		--name serverd-$(variant)-container \
-		serverd-$(variant)-image
+		--name bs-$(variant)-container \
+		bs-$(variant)-image
 
 dstart-container: ## Start the defined docker container. Usage: make dstart-container variant=Base|VSCode|CI
-	@docker start serverd-$(variant)-container -a
+	@docker start bs-$(variant)-container -a
 
 dclean: ## Remove everything associated with the defined dockerfile. Usage: make dclean variant=Base|VSCode|CI
-	@docker stop serverd-$(variant)-container
-	@docker rm serverd-$(variant)-container
-	@docker rmi -f serverd-$(variant)-image
+	@docker stop bs-$(variant)-container
+	@docker rm bs-$(variant)-container
+	@docker rmi -f bs-$(variant)-image
 
 dinit: ## Initialize project, VSCode setup done by VSCode
 	@make dbuild-image variant=base

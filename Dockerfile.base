@@ -1,4 +1,4 @@
-FROM rust:1
+    FROM rust:1
 
 # To check status of tools by nightly versions see: https://rust-lang.github.io/rustup-components-history/index.html
 ENV TOOLCHAIN_VERSION=nightly-2021-01-31
@@ -8,7 +8,7 @@ RUN apt-get update \
     && apt-get -y install pkg-config libssl-dev make \
     # Faster linker
     lld \
-    # Tools used by serverd
+    # Tools used by bs
     net-tools dnsutils
 
 # Use a much faster linker... if it works

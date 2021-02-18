@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "internal-prelude",
+    
+    "networking-service",
+    "monitoring-service",
+    "notification-service",
+
+    "serverd",
+]

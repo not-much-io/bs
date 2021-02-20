@@ -1,4 +1,5 @@
 [workspace]
 members = [
     "bs",
+    "bs_cli"
 ]

@@ -1,7 +1,6 @@
 .DEFAULT_GOAL:= help
 
 build: ## Build everything
-	@cargo build
 	@cargo build --release
 
 format: ## Format rust code

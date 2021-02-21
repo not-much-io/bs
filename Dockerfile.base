@@ -4,17 +4,32 @@ FROM rust:1
 ENV TOOLCHAIN_VERSION=nightly-2021-01-31
 
 # Project deps
-RUN apt-get update \
-    && apt-get -y install pkg-config libssl-dev make \
+RUN apt-get update && \
+    apt-get -y install pkg-config libssl-dev make \
+    # For crosscompiling
+    cmake clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev \
     # Faster linker
-    lld \
+    # lld \
     # Tools used by bs
     net-tools dnsutils
 
 # Use a much faster linker... if it works
-ENV RUSTFLAGS "-C link-arg=-fuse-ld=lld"    
+# ENV RUSTFLAGS="-C link-arg=-fuse-ld=lld"    
 
 # Install nightly toolchain and components
-RUN rustup toolchain install ${TOOLCHAIN_VERSION} \
-    && rustup default ${TOOLCHAIN_VERSION} \
-    && rustup component add rustfmt clippy
+RUN rustup toolchain install ${TOOLCHAIN_VERSION} && \
+    rustup default ${TOOLCHAIN_VERSION} && \
+    rustup component add rustfmt clippy
+
+# Setup macOS cross compiling
+RUN rustup target add x86_64-apple-darwin && \
+    git clone https://github.com/tpoechtrager/osxcross && \
+    cd osxcross && \
+    wget -nc https://s3.dockerproject.org/darwin/v2/MacOSX10.10.sdk.tar.xz && \
+    mv MacOSX10.10.sdk.tar.xz tarballs/ && \
+    UNATTENDED=yes OSX_VERSION_MIN=10.7 ./build.sh
+ENV PATH="$PATH:/osxcross/target/bin"
+
+# export CC=o64-clang
+# export CXX=o64-clang++
+# export LIBZ_SYS_STATIC=1

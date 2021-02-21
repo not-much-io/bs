@@ -1,7 +1,12 @@
 .DEFAULT_GOAL:= help
 
 build: ## Build everything
-	@cargo build --release
+	@cargo build \
+		--release \
+		--target x86_64-apple-darwin
+	@cargo build \
+		--release \
+		--target x86_64-unknown-linux-gnu
 
 format: ## Format rust code
 	@cargo fmt
@@ -16,7 +21,7 @@ test: ## Rust rust tests
 	@cargo test
 
 ci: ## Run CI rust quality check process
-	make lint && make format-check && make test
+	make lint && make format-check && make test && make build
 
 dbuild-image: ## Build the defined docker image. Usage: make dbuild-image variant=Base|VSCode|CI
 	@docker build --file Dockerfile.$(variant) --tag bs-$(variant)-image .

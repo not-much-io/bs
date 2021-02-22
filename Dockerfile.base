@@ -29,7 +29,3 @@ RUN rustup target add x86_64-apple-darwin && \
     mv MacOSX10.10.sdk.tar.xz tarballs/ && \
     UNATTENDED=yes OSX_VERSION_MIN=10.7 ./build.sh
 ENV PATH="$PATH:/osxcross/target/bin"
-
-# export CC=o64-clang
-# export CXX=o64-clang++
-# export LIBZ_SYS_STATIC=1

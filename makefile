@@ -1,12 +1,7 @@
 .DEFAULT_GOAL:= help
 
 build: ## Build everything
-	@cargo build \
-		--release \
-		--target x86_64-apple-darwin
-	@cargo build \
-		--release \
-		--target x86_64-unknown-linux-gnu
+	@cargo build --release
 
 format: ## Format rust code
 	@cargo fmt
@@ -20,11 +15,25 @@ lint: ## Lint rust code
 test: ## Rust rust tests
 	@cargo test
 
-ci: ## Run CI rust quality check process
+cross-compile: ## Cross compile for macOS
+	@cargo build \
+		--release \
+		--target x86_64-apple-darwin
+
+it:
+	@sh integration_tests/run_macos_to_linux.sh
+
+ci: ## Run CI quality check process
 	make lint && make format-check && make test && make build
 
+ci-macos: ## Run CI quality process specifically for macOS
+	make test && make build
+
 dbuild-image: ## Build the defined docker image. Usage: make dbuild-image variant=Base|VSCode|CI
-	@docker build --file Dockerfile.$(variant) --tag bs-$(variant)-image .
+	@docker build \
+		--file Dockerfile.$(variant) \
+		--tag bs-$(variant)-image \
+		.
 
 dcreate-container: ## Create the defined docker container. Usage: make dcreate-container variant=Base|VSCode|CI
 	@docker create \

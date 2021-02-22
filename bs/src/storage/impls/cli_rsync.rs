@@ -21,8 +21,7 @@ impl StorageSyncer for CLIRSyncStorageSyncer {
                 .config
                 .client_paths
                 .get(i)
-                .ok_or(anyhow!(ERR_MSG_CONF_INVARIANT_NOT_MAINTAINED))?
-                .join("/*");
+                .ok_or(anyhow!(ERR_MSG_CONF_INVARIANT_NOT_MAINTAINED))?;
 
             let sync_to = format!(
                 "{}@{}:{:?}",
@@ -34,13 +33,15 @@ impl StorageSyncer for CLIRSyncStorageSyncer {
                     .ok_or(anyhow!(ERR_MSG_CONF_INVARIANT_NOT_MAINTAINED))?,
             );
 
-            Command::new("rsync")
+            let output = Command::new("rsync")
                 .arg("--verbose")
                 .arg("--archive")
                 .arg("--recursive")
                 .arg(sync_from)
                 .arg(sync_to)
                 .output()?;
+
+            println!("output: {:?}", output);
         }
 
         Ok(())

@@ -13,3 +13,10 @@ jobs:
           make dbuild-image variant=ci
           make dcreate-container variant=ci
           make dstart-container variant=ci
+  ci-macos:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: ci-macos
+        run: |
+          make ci-macos

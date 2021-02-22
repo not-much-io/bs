@@ -19,7 +19,9 @@
 		"wayou.vscode-todo-highlight",
 		"serayuzgur.crates",
 	],
-	"containerEnv": {},
-	"runArgs": [],
+	"runArgs": [
+		"--net host",
+	],
+	// TODO: Make generic
 	"workspaceMount": "source=/home/nmio/Projects/bs,target=/workspaces/bs,type=bind,consistency=cached"
 }

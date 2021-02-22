@@ -1,3 +1,4 @@
+use core::panic;
 use std::{net::IpAddr, path::PathBuf};
 
 pub const ERR_MSG_CONF_INVARIANT_NOT_MAINTAINED: &str =
@@ -22,6 +23,10 @@ impl BsConfig {
         server_user: String,
         server_paths: Vec<PathBuf>,
     ) -> BsConfig {
+        if client_paths.len() != server_paths.len() || client_paths.is_empty() {
+            panic!("wtf?");
+        }
+
         // TODO: Valide invariants, return Result<thiserror::Error>
 
         BsConfig {

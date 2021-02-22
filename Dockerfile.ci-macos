@@ -1,0 +1,5 @@
+FROM bs-base-image
+
+COPY . .
+
+CMD make cross-compile

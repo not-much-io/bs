@@ -27,7 +27,7 @@ ci: ## Run CI quality check process
 	make lint && make format-check && make test && make build
 
 ci-macos: ## Run CI quality process specifically for macOS
-	make test && make build
+	make test && make cross-compile
 
 dbuild-image: ## Build the defined docker image. Usage: make dbuild-image variant=Base|VSCode|CI
 	@docker build \

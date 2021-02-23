@@ -2,4 +2,6 @@ FROM bs-base-image
 
 COPY . .
 
-CMD make ci
+CMD make lint && \
+    make format-check && \
+    make test

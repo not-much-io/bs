@@ -3,7 +3,27 @@ name: ci
 on: push
 
 jobs:
-  ci:
+  # Just execute locally prebuilt test binaries (darwin)
+  quick-ci-darwin:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: quick-ci-darwin
+        run: |
+          run-packaged-tests target=x86_64_darwin
+
+  # Just execute locally prebuilt test binaries (linux)
+  quick-ci-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: quick-ci-linux
+        run: |
+          run-packaged-tests target=x86_64_linux
+
+  # Check format, lint, build from scratch and run tests
+  full-ci-linux:
+    needs: [quick-ci-darwin, quick-ci-linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,16 +33,3 @@ jobs:
           make dbuild-image variant=ci
           make dcreate-container variant=ci
           make dstart-container variant=ci
-  ci-macos:
-    runs-on: macos-10.15
-    steps:
-      - uses: actions/checkout@v2
-      - name: ci-macos
-        run: |
-          make dinit
-          make dbuild-image variant=ci-macos
-          make dcreate-container variant=ci-macos
-          make dstart-container variant=ci-macos
-          # Just test it runs
-          ./target/x86_64-apple-darwin/release/bs --help
-          # TODO: add executing tests on macos

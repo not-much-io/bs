@@ -6,7 +6,7 @@ runOnMacOSClient() {
 		"cd $MACOS_CLIENT_DIR && $1"
 }
 
-make cross-compile
+make build-x86_64_darwin
 
 scp -i integration_tests/.ssh/id_rsa \
 	target/x86_64-apple-darwin/release/bs \

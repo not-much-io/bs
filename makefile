@@ -1,33 +1,63 @@
 .DEFAULT_GOAL:= help
 
-build: ## Build everything
-	@cargo build --release
+build: ## Build project in debug mode
+	@cargo build
 
-format: ## Format rust code
+format: ## Format code
 	@cargo fmt
 
-format-check: ## Check formatting of rust code
+format-check: ## Check formatting of code
 	@cargo fmt -- --check
 
-lint: ## Lint rust code
+lint: ## Lint code
 	@cargo clippy
 
-test: ## Rust rust tests
+test: ## Run tests
 	@cargo test
 
-cross-compile: ## Cross compile for macOS
+build-x86_64_linux: ## Build for linux
+	@cargo build \
+		--release \
+		--target x86_64-unknown-linux-gnu
+
+build-x86_64_darwin: ## Build for macOS
 	@cargo build \
 		--release \
 		--target x86_64-apple-darwin
 
+build-x86_64_linux-tests: ## Build tests for linux
+	@cargo test \
+		--no-run \
+		--target x86_64-unknown-linux-gnu
+
+build-x86_64_darwin-tests: ## Build tests for linux
+	@cargo test \
+		--no-run \
+		--target x86_64-apple-darwin
+
+package: ## Build and move all binaries to bin dir
+	@cargo clean --target x86_64-apple-darwin && \
+		cargo clean --target x86_64-unknown-linux-gnu && \
+		rm -f bin/x86_64_linux/bs && \
+		rm -f -r bin/x86_64_linux/tests/* && \
+		rm -f bin/x86_64_darwin/bs && \
+		rm -f -r bin/x86_64_darwin/tests/*
+	@make build-x86_64_linux && \
+		cp target/x86_64-unknown-linux-gnu/release/bs bin/x86_64_linux/
+	@make build-x86_64_linux-tests && \
+		cp target/x86_64-unknown-linux-gnu/debug/deps/bs-* bin/x86_64_linux/tests && \
+		rm -f bin/x86_64_linux/tests/bs-*.d
+	@make build-x86_64_darwin && \
+		cp target/x86_64-apple-darwin/release/bs bin/x86_64_darwin/
+	@make build-x86_64_darwin-tests && \
+		cp target/x86_64-apple-darwin/debug/deps/bs-* bin/x86_64_darwin/tests && \
+		rm -f bin/x86_64_darwin/tests/bs-*.d
+
+run-packaged-tests: ## Run packaged tests, usage: run-packaged-tests target=x86_64_linux
+	@sh bin/run_all_tests.sh $(target)
+
 it:
 	@sh integration_tests/run_macos_to_linux.sh
-
-ci: ## Run CI quality check process
-	make lint && make format-check && make test && make build
-
-ci-macos: ## Run CI quality process specifically for macOS
-	make test && make cross-compile
 
 dbuild-image: ## Build the defined docker image. Usage: make dbuild-image variant=Base|VSCode|CI
 	@docker build \

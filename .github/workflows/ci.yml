@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: quick-ci-darwin
         run: |
-          run-packaged-tests target=x86_64_darwin
+          make run-packaged-tests target=x86_64_darwin
 
   # Just execute locally prebuilt test binaries (linux)
   quick-ci-linux:
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: quick-ci-linux
         run: |
-          run-packaged-tests target=x86_64_linux
+          make run-packaged-tests target=x86_64_linux
 
   # Check format, lint, build from scratch and run tests
   full-ci-linux:

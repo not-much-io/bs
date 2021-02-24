@@ -38,6 +38,7 @@ build-x86_64_darwin-tests: ## Build tests for linux
 		--no-run \
 		--target x86_64-apple-darwin
 
+# TODO: Probably don't have to cargo clean?
 package: ## Build and move all binaries to bin dir
 	@cargo clean --target x86_64-apple-darwin && \
 		cargo clean --target x86_64-unknown-linux-gnu && \
@@ -45,15 +46,21 @@ package: ## Build and move all binaries to bin dir
 		rm -f -r bin/x86_64_linux/tests/* && \
 		rm -f bin/x86_64_darwin/bs && \
 		rm -f -r bin/x86_64_darwin/tests/*
+	# Build in brute force parallel, faster than serially
+	@make build-x86_64_linux & \
+		make build-x86_64_linux-tests & \
+		make build-x86_64_darwin & \
+		make build-x86_64_darwin-tests
+	# Still building in serial to get any error messages in a more readable
 	@make build-x86_64_linux && \
-		cp target/x86_64-unknown-linux-gnu/release/bs bin/x86_64_linux/
-	@make build-x86_64_linux-tests && \
-		cp target/x86_64-unknown-linux-gnu/debug/deps/bs-* bin/x86_64_linux/tests && \
+		make build-x86_64_darwin && \
+		make build-x86_64_linux-tests && \
+		make build-x86_64_darwin-tests
+	@cp target/x86_64-unknown-linux-gnu/release/bs bin/x86_64_linux/
+	@cp target/x86_64-apple-darwin/release/bs bin/x86_64_darwin/
+	@cp target/x86_64-unknown-linux-gnu/debug/deps/bs-* bin/x86_64_linux/tests && \
 		rm -f bin/x86_64_linux/tests/bs-*.d
-	@make build-x86_64_darwin && \
-		cp target/x86_64-apple-darwin/release/bs bin/x86_64_darwin/
-	@make build-x86_64_darwin-tests && \
-		cp target/x86_64-apple-darwin/debug/deps/bs-* bin/x86_64_darwin/tests && \
+	@cp target/x86_64-apple-darwin/debug/deps/bs-* bin/x86_64_darwin/tests && \
 		rm -f bin/x86_64_darwin/tests/bs-*.d
 
 run-packaged-tests: ## Run packaged tests, usage: run-packaged-tests target=x86_64_linux

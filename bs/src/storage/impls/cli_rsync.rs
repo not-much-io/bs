@@ -1,8 +1,7 @@
-use anyhow::anyhow;
 use std::process::Command;
 
-use crate::config::ERR_MSG_CONF_INVARIANT_NOT_MAINTAINED;
 use crate::storage::{config::StorageConfig, StorageSyncer, SyncResult};
+use anyhow::anyhow;
 
 pub struct CLIRSyncStorageSyncer {
     config: StorageConfig,
@@ -16,21 +15,11 @@ impl CLIRSyncStorageSyncer {
 
 impl StorageSyncer for CLIRSyncStorageSyncer {
     fn sync(&self) -> SyncResult {
-        for i in 0..self.config.client_paths.len() {
-            let sync_from = self
-                .config
-                .client_paths
-                .get(i)
-                .ok_or(anyhow!(ERR_MSG_CONF_INVARIANT_NOT_MAINTAINED))?;
-
+        for (client_path, server_path) in self.config.path_mappings.iter() {
+            let sync_from = client_path;
             let sync_to = format!(
                 "{}@{}:{:?}",
-                self.config.server_user,
-                self.config.server_ip,
-                self.config
-                    .server_paths
-                    .get(i)
-                    .ok_or(anyhow!(ERR_MSG_CONF_INVARIANT_NOT_MAINTAINED))?,
+                self.config.server_user, self.config.server_ip, server_path,
             );
 
             let output = Command::new("rsync")
@@ -41,7 +30,12 @@ impl StorageSyncer for CLIRSyncStorageSyncer {
                 .arg(sync_to)
                 .output()?;
 
-            println!("output: {:?}", output);
+            if !output.stderr.is_empty() {
+                return Err(anyhow!(
+                    "rsync executon resulted in an error: {:?}",
+                    output.stderr
+                ));
+            }
         }
 
         Ok(())

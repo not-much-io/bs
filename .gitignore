@@ -15,4 +15,4 @@ prototype
 .history
 integration_tests/.env
 integration_tests/.ssh
-integration_tests/test_env
+integration_tests/it_project

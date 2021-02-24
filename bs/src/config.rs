@@ -1,41 +1,29 @@
-use core::panic;
-use std::{net::IpAddr, path::PathBuf};
-
-pub const ERR_MSG_CONF_INVARIANT_NOT_MAINTAINED: &str =
-    "Some invariant of bs configuration unmaintained, this is a bug";
+use std::{collections::HashMap, net::IpAddr, path::PathBuf};
 
 pub struct BsConfig {
-    pub client_ip:    IpAddr,
-    pub client_user:  String,
-    pub client_paths: Vec<PathBuf>,
+    pub client_ip:   IpAddr,
+    pub client_user: String,
 
-    pub server_ip:    IpAddr,
-    pub server_user:  String,
-    pub server_paths: Vec<PathBuf>,
+    pub server_ip:   IpAddr,
+    pub server_user: String,
+
+    pub path_mappings: HashMap<PathBuf, PathBuf>,
 }
 
 impl BsConfig {
     pub fn new(
         client_ip: IpAddr,
         client_user: String,
-        client_paths: Vec<PathBuf>,
         server_ip: IpAddr,
         server_user: String,
-        server_paths: Vec<PathBuf>,
+        path_mappings: HashMap<PathBuf, PathBuf>,
     ) -> BsConfig {
-        if client_paths.len() != server_paths.len() || client_paths.is_empty() {
-            panic!("wtf?");
-        }
-
-        // TODO: Valide invariants, return Result<thiserror::Error>
-
         BsConfig {
             client_ip,
             client_user,
-            client_paths,
             server_ip,
             server_user,
-            server_paths,
+            path_mappings,
         }
     }
 }

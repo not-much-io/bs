@@ -13,7 +13,7 @@ RUN apt-get update && \
     # Tools used by bs
     net-tools dnsutils
 
-# Use a much faster linker... if it works
+# Use a much faster linker... if it works (interferes with darwin crosscompile apparently?)
 # ENV RUSTFLAGS="-C link-arg=-fuse-ld=lld"    
 
 # Install nightly toolchain and components

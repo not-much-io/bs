@@ -9,7 +9,10 @@ format: ## Format code
 format-check: ## Check formatting of code
 	@cargo fmt -- --check
 
-lint: ## Lint code
+lint: ## Lint and autofix code
+	@cargo fix --allow-dirty
+
+lint-check: ## Check code with linter
 	@cargo clippy
 
 test: ## Run tests

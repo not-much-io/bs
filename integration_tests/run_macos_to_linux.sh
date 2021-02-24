@@ -10,10 +10,15 @@ make build-x86_64_darwin
 cp target/x86_64-apple-darwin/release/bs \
 	"$TEST_RUNNER_PROJECT_TEMPLATE"
 
+# Clear current project folder on the client machine if any there
+ssh -i integration_tests/.ssh/id_rsa \
+	"$MACOS_CLIENT_USER"@"$MACOS_CLIENT_IP" \
+	"rm -rf $MACOS_CLIENT_DIR && mkdir $MACOS_CLIENT_DIR"
+
 # Move the project folder to the client machine
 scp -r -i integration_tests/.ssh/id_rsa \
 	"$TEST_RUNNER_PROJECT_TEMPLATE"/* \
-	"$MACOS_CLIENT_USER"@"$MACOS_CL IENT_IP":"$MACOS_CLIENT_DIR"
+	"$MACOS_CLIENT_USER"@"$MACOS_CLIENT_IP":"$MACOS_CLIENT_DIR"
 
 # TESTS
 
@@ -29,4 +34,7 @@ runOnMacOSClient "./bs \
 	--server-user $LINUX_SERVER_USER \
 	--server-paths $LINUX_SERVER_DIR"
 
-ls integration_tests/it_project
+# TODO: Do via bs on darwin client
+
+gcc integration_tests/it_project/main.c -o integration_tests/it_project/itprj
+./integration_tests/it_project/itprj

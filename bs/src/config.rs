@@ -1,5 +1,7 @@
 use std::{collections::HashMap, net::IpAddr, path::PathBuf};
 
+use crate::environment::container::docker::DockerConfig;
+
 pub struct BsConfig {
     pub client_ip:   IpAddr,
     pub client_user: String,
@@ -25,5 +27,11 @@ impl BsConfig {
             server_user,
             path_mappings,
         }
+    }
+}
+
+impl From<BsConfig> for DockerConfig {
+    fn from(_: BsConfig) -> Self {
+        DockerConfig::new("".into())
     }
 }

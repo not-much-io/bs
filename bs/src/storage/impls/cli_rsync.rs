@@ -3,17 +3,17 @@ use std::process::Command;
 use crate::storage::{config::StorageConfig, StorageSyncer, SyncResult};
 use anyhow::anyhow;
 
-pub struct CLIRSyncStorageSyncer {
+pub struct CliRSyncStorageSyncer {
     config: StorageConfig,
 }
 
-impl CLIRSyncStorageSyncer {
-    pub fn new(config: StorageConfig) -> CLIRSyncStorageSyncer {
-        CLIRSyncStorageSyncer { config }
+impl CliRSyncStorageSyncer {
+    pub fn new(config: StorageConfig) -> Self {
+        CliRSyncStorageSyncer { config }
     }
 }
 
-impl StorageSyncer for CLIRSyncStorageSyncer {
+impl StorageSyncer for CliRSyncStorageSyncer {
     fn sync(&self) -> SyncResult {
         for (client_path, server_path) in self.config.path_mappings.iter() {
             let sync_from = client_path;

@@ -10,7 +10,7 @@ RUN apt-get update && \
     cmake clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev \
     # Faster linker
     # lld \
-    # Tools used by bs
+    # Tools used by distrunner
     net-tools dnsutils
 
 # Use a much faster linker... if it works (interferes with darwin crosscompile apparently?)

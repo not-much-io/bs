@@ -1,0 +1,15 @@
+[package]
+name = "distrunner"
+version = "0.1.0"
+authors = ["nmio <kristo.koert@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+anyhow="1.0"
+thiserror="1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+futures = "0.3.13"
+# ssh2="0.9.1"
+tokio = { version = "1.2.0", features = ["full"] }
+clap="3.0.0-beta.2"

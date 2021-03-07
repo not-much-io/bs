@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "bs",
-    "bs_cli"
+    "distrunner",
+    "distrunner_cli"
 ]

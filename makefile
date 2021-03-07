@@ -42,9 +42,9 @@ build-x86_64_darwin-tests: ## Build tests for linux
 package: ## Build and move all binaries to bin dir
 	@cargo clean --target x86_64-apple-darwin && \
 		cargo clean --target x86_64-unknown-linux-gnu && \
-		rm -f bin/x86_64_linux/bs && \
+		rm -f bin/x86_64_linux/distrunner && \
 		rm -f -r bin/x86_64_linux/tests/* && \
-		rm -f bin/x86_64_darwin/bs && \
+		rm -f bin/x86_64_darwin/distrunner && \
 		rm -f -r bin/x86_64_darwin/tests/*
 	# Build in brute force parallel, faster than serially
 	@make build-x86_64_linux & \
@@ -56,37 +56,37 @@ package: ## Build and move all binaries to bin dir
 		make build-x86_64_darwin && \
 		make build-x86_64_linux-tests && \
 		make build-x86_64_darwin-tests
-	@cp target/x86_64-unknown-linux-gnu/release/bs bin/x86_64_linux/
-	@cp target/x86_64-apple-darwin/release/bs bin/x86_64_darwin/
-	@cp target/x86_64-unknown-linux-gnu/debug/deps/bs-* bin/x86_64_linux/tests && \
-		rm -f bin/x86_64_linux/tests/bs-*.d
-	@cp target/x86_64-apple-darwin/debug/deps/bs-* bin/x86_64_darwin/tests && \
-		rm -f bin/x86_64_darwin/tests/bs-*.d
+	@cp target/x86_64-unknown-linux-gnu/release/distrunner bin/x86_64_linux/
+	@cp target/x86_64-apple-darwin/release/distrunner bin/x86_64_darwin/
+	@cp target/x86_64-unknown-linux-gnu/debug/deps/distunner-* bin/x86_64_linux/tests && \
+		rm -f bin/x86_64_linux/tests/distrunner-*.d
+	@cp target/x86_64-apple-darwin/debug/deps/distrunner-* bin/x86_64_darwin/tests && \
+		rm -f bin/x86_64_darwin/tests/distrunner-*.d
 
 run-packaged-tests: ## Run packaged tests, usage: run-packaged-tests target=x86_64_linux
 	@sh bin/run_all_tests.sh $(target)
 
 it:
-	@sh integration_tests/run_macos_to_linux.sh
+	@sh its/run.sh
 
 dbuild-image: ## Build the defined docker image. Usage: make dbuild-image variant=Base|VSCode|CI
 	@docker build \
 		--file Dockerfile.$(variant) \
-		--tag bs-$(variant)-image \
+		--tag distrunner-$(variant)-image \
 		.
 
 dcreate-container: ## Create the defined docker container. Usage: make dcreate-container variant=Base|VSCode|CI
 	@docker create \
-		--name bs-$(variant)-container \
-		bs-$(variant)-image
+		--name distrunner-$(variant)-container \
+		distrunner-$(variant)-image
 
 dstart-container: ## Start the defined docker container. Usage: make dstart-container variant=Base|VSCode|CI
-	@docker start bs-$(variant)-container -a
+	@docker start distrunner-$(variant)-container -a
 
 dclean: ## Remove everything associated with the defined dockerfile. Usage: make dclean variant=Base|VSCode|CI
-	@docker stop bs-$(variant)-container
-	@docker rm bs-$(variant)-container
-	@docker rmi -f bs-$(variant)-image
+	@docker stop distrunner-$(variant)-container
+	@docker rm distrunner-$(variant)-container
+	@docker rmi -f distrunner-$(variant)-image
 
 dinit: ## Initialize project, VSCode setup done by VSCode
 	@make dbuild-image variant=base

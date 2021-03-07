@@ -1,4 +1,4 @@
-FROM bs-base-image
+FROM distrunner-base-image
 
 COPY . .
 

@@ -1,0 +1,22 @@
+{
+    "environments": [
+        {
+            "id": "local",
+            "type": "Local"
+        }
+    ],
+    "processes": [
+        {
+            "id": "proc1",
+            "cmd": "make proc1",
+            "type": "Local"
+        }
+    ],
+    "run_plan": [
+        {
+            "id": "local_build",
+            "environment_id": "local",
+            "process_id": "proc1"
+        }
+    ]
+}

@@ -14,8 +14,9 @@
     "rust-analyzer.checkOnSave.command": "clippy",
     "rust-analyzer.updates.channel": "stable",
     "rust-analyzer.procMacro.enable": true,
-    
     "editor.fontLigatures": false,
+    "editor.lineNumbers": "on",
+    "editor.quickSuggestionsDelay": 10,
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -25,5 +26,6 @@
         "target": true,
         ".history": true,
         "Cargo.lock": true,
-    }
+    },
+    "rust-analyzer.inlayHints.enable": false
 }

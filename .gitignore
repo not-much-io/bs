@@ -13,6 +13,9 @@ target/
 prototype
 
 .history
-integration_tests/.env
-integration_tests/.ssh
-integration_tests/it_project
+its/.env
+its/.ssh
+its/it_project
+
+# Ignore the binaries
+itsz/projects/**/distrunner

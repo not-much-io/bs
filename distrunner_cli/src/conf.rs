@@ -29,7 +29,7 @@ impl From<DistRunnerConfig> for DistRunner {
         let mut proc_registry = HashMap::new();
         for proc_conf in config.processes {
             let id: ProcessID = proc_conf.id.clone();
-            let proc: Process = proc_conf.into();
+            let proc: ProcessConfig = proc_conf;
 
             proc_registry.insert(id, proc);
         }
@@ -37,7 +37,10 @@ impl From<DistRunnerConfig> for DistRunner {
         let mut run_units = Vec::new();
         for run_plan in config.run_plan {
             let env = env_registry.remove(&run_plan.environment_id).unwrap();
-            let proc = proc_registry.remove(&run_plan.process_id).unwrap();
+            let proc = proc_registry
+                .remove(&run_plan.process_id)
+                .unwrap()
+                .into_process(&env);
 
             run_units.push(RunUnit::new(run_plan.id, env, proc));
         }
@@ -49,6 +52,7 @@ impl From<DistRunnerConfig> for DistRunner {
 #[derive(Deserialize)]
 enum EnvironmentType {
     Local,
+    LocalDocker,
 }
 
 type EnvironmentID = String;
@@ -58,20 +62,25 @@ struct EnvironmentConfig {
     id: EnvironmentID,
 
     #[serde(rename = "type")]
-    type_: EnvironmentType,
+    type_:      EnvironmentType,
+    dockerfile: Option<PathBuf>,
 }
 
 impl From<EnvironmentConfig> for Environment {
     fn from(config: EnvironmentConfig) -> Self {
         match config.type_ {
             EnvironmentType::Local => Environment::new_local(),
+            EnvironmentType::LocalDocker => {
+                let dockerfile_string = config
+                    .dockerfile
+                    .unwrap()
+                    .into_os_string()
+                    .into_string()
+                    .unwrap();
+                Environment::new_local_docker(config.id, dockerfile_string)
+            }
         }
     }
-}
-
-#[derive(Deserialize)]
-enum ProcessType {
-    Local,
 }
 
 type ProcessID = String;
@@ -80,15 +89,21 @@ type ProcessID = String;
 struct ProcessConfig {
     id:  ProcessID,
     cmd: String,
-
-    #[serde(rename = "type")]
-    type_: ProcessType,
 }
 
-impl From<ProcessConfig> for Process {
-    fn from(config: ProcessConfig) -> Self {
-        match config.type_ {
-            ProcessType::Local => Process::new_local(config.cmd),
+impl ProcessConfig {
+    fn into_process(self, env: &Environment) -> Process {
+        match env {
+            Environment::Local => Process::new_local(self.cmd),
+            Environment::LocalDocker { container_name, .. } => {
+                Process::new_local_docker(self.cmd, container_name.clone())
+            }
+            Environment::RemoteSsh => {
+                todo!()
+            }
+            Environment::RemoteDocker => {
+                todo!()
+            }
         }
     }
 }
@@ -110,7 +125,7 @@ mod tests {
 
     #[test]
     fn test_local_deserialize() {
-        let file = File::open("../its/projects/local/distrunner.json").unwrap();
+        let file = File::open("../its/projects/generic/distrunner.json").unwrap();
         let _config: DistRunnerConfig = serde_json::from_reader(file).unwrap();
     }
 }

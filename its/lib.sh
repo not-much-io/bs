@@ -107,7 +107,7 @@ setupProjectOnHost() {
 
 test_local() {
 	HOST="DARWIN1"
-	PRJ="$IT_PROJECTS/local"
+	PRJ="$IT_PROJECTS/generic"
 
 	# Build the binary
 	make build-x86_64_darwin

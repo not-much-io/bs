@@ -3,8 +3,13 @@ use std::process::{Child, Command, Stdio};
 use anyhow::{anyhow, Result};
 
 pub enum Process {
-    LocalProcess { cmd: Command },
-    LocalDockerProcesss {},
+    LocalProcess {
+        cmd: Command,
+    },
+    LocalDockerProcesss {
+        cmd:       String,
+        container: String,
+    },
     RemoteProcess {},
     RemoteDockerProcess {},
 }
@@ -23,15 +28,27 @@ impl Process {
         Process::LocalProcess { cmd }
     }
 
+    pub fn new_local_docker(cmd: String, container: String) -> Self {
+        Process::LocalDockerProcesss { cmd, container }
+    }
+
     pub async fn spawn(&mut self) -> Result<ProcessHandle> {
         match self {
             Process::LocalProcess { cmd } => {
                 Ok(ProcessHandle::new_local(cmd.spawn().map_err(|err| {
-                    anyhow!("Faield to spawn process: {}", err)
+                    anyhow!("Failed to spawn process: {}", err)
                 })?))
             }
-            Process::LocalDockerProcesss {} => {
-                todo!()
+            Process::LocalDockerProcesss { cmd: _, container } => {
+                println!("executing cmd in docker...");
+                Ok(ProcessHandle::new_local(
+                    Command::new("docker")
+                        .arg("exec")
+                        .arg(container)
+                        .arg("ls")
+                        .spawn()
+                        .map_err(|err| anyhow!("Failed to spawn process: {}", err))?,
+                ))
             }
             Process::RemoteProcess {} => {
                 todo!()

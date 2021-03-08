@@ -1,12 +1,10 @@
 #![feature(command_access)]
 
-use std::collections::HashMap;
-
 use anyhow::{anyhow, Error, Result};
 use environment::Environment;
 use futures::future;
 use process::Process;
-use tokio::sync::Mutex;
+use tokio::task::JoinHandle;
 
 pub mod environment;
 pub mod network;
@@ -24,15 +22,19 @@ impl DistRunner {
 
     pub async fn run(self) -> Result<()> {
         let mut task_handles = Vec::new();
-        for mut unit in self.run_units {
-            let handle = tokio::task::spawn(async move {
-                unit.environment.setup();
-                let spawn_result = unit.process.spawn().await;
+        for mut run_unit in self.run_units {
+            let handle: JoinHandle<Result<_, Error>> = tokio::task::spawn(async move {
+                run_unit
+                    .environment
+                    .setup()
+                    .map_err(|err| anyhow!("Environment setup failed: {}", err))?;
+                let proc_handle = run_unit
+                    .process
+                    .spawn()
+                    .await
+                    .map_err(|err| anyhow!("Process spawn failed {}:", err))?;
 
-                match spawn_result {
-                    Err(err) => Err(err),
-                    Ok(env_handle) => env_handle.wait_with_output(),
-                }
+                Ok((run_unit.id, proc_handle.wait_with_output()?))
             });
             task_handles.push(handle);
         }
@@ -40,8 +42,8 @@ impl DistRunner {
         for join_result in future::join_all(task_handles).await.iter() {
             let process_result = join_result.as_ref().unwrap();
             match process_result {
-                Ok(output) => {
-                    println!("output:\n{}", output)
+                Ok((id, output)) => {
+                    println!("{} output:\n{}", id, output)
                 }
                 Err(err) => {
                     println!("error:\n{}", err)

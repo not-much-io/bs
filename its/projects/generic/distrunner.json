@@ -1,0 +1,35 @@
+{
+    "environments": [
+        {
+            "id": "local",
+            "type": "Local"
+        },
+        {
+            "id": "local_docker",
+            "type": "LocalDocker",
+            "dockerfile": "Dockerfile.LocalDocker"
+        }
+    ],
+    "processes": [
+        {
+            "id": "proc1",
+            "cmd": "make proc1"
+        },
+        {
+            "id": "proc2",
+            "cmd": "make proc2"
+        }
+    ],
+    "run_plan": [
+        {
+            "id": "local_build",
+            "environment_id": "local",
+            "process_id": "proc1"
+        },
+        {
+            "id": "local_docker_build",
+            "environment_id": "local_docker",
+            "process_id": "proc2"
+        }
+    ]
+}

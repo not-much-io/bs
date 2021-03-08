@@ -1,5 +1,5 @@
 {
-	"name": "bs",
+	"name": "distrunner",
 	"dockerFile": "../Dockerfile.vscode",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
@@ -23,5 +23,5 @@
 		"--net host",
 	],
 	// TODO: Make generic
-	"workspaceMount": "source=/home/nmio/Projects/bs,target=/workspaces/bs,type=bind,consistency=cached"
+	"workspaceMount": "source=/home/nmio/Projects/distrunner,target=/workspaces/distrunner,type=bind,consistency=cached"
 }
